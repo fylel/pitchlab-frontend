@@ -16,7 +16,6 @@ const YEAR_OPTIONS = [
   '2025', '2024', '2023'
 ]
 
-const ZONE_GRID = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 const COUNT_ROWS = [
   [{ b: 0, s: 0 }, { b: 0, s: 1 }, { b: 0, s: 2 }],
   [{ b: 1, s: 0 }, { b: 1, s: 1 }, { b: 1, s: 2 }],
@@ -193,32 +192,94 @@ function ZoneSelector({ selectedZones, onChange }) {
     if (selectedZones.includes(zone)) onChange(selectedZones.filter(z => z !== zone))
     else onChange([...selectedZones, zone])
   }
+
+  const CELL = 36
+  const SIZE = CELL * 5
+  const SS = CELL         // STRIKE_START
+  const SE = SS + CELL * 3  // STRIKE_END
+  const MID = SIZE / 2
+
+  const sel = (zone) => selectedZones.includes(zone)
+  const fillColor = (zone) => sel(zone) ? 'rgba(240,136,62,0.35)' : '#1c2b42'
+  const textColor = (zone) => sel(zone) ? '#f0883e' : '#7a8a9e'
+  const pathD = (pts) => pts.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x},${y}`).join(' ') + ' Z'
+
+  const outerZones = [
+    {
+      zone: 11,
+      path: [[0, 0], [MID, 0], [MID, SS], [SS, SS], [SS, MID], [0, MID]],
+      tx: 8, ty: 13,
+    },
+    {
+      zone: 12,
+      path: [[MID, 0], [SIZE, 0], [SIZE, MID], [SE, MID], [SE, SS], [MID, SS]],
+      tx: SIZE - 20, ty: 13,
+    },
+    {
+      zone: 13,
+      path: [[0, MID], [SS, MID], [SS, SE], [MID, SE], [MID, SIZE], [0, SIZE]],
+      tx: 8, ty: SIZE - 5,
+    },
+    {
+      zone: 14,
+      path: [[SE, MID], [SIZE, MID], [SIZE, SIZE], [MID, SIZE], [MID, SE], [SE, SE]],
+      tx: SIZE - 20, ty: SIZE - 5,
+    },
+  ]
+
   return (
-    <div style={{ display: 'inline-block', border: '2px solid #30363d', borderRadius: 4, overflow: 'hidden' }}>
-      {ZONE_GRID.map((row, ri) => (
-        <div key={ri} style={{ display: 'flex' }}>
-          {row.map(zone => {
-            const sel = selectedZones.includes(zone)
-            return (
-              <div
-                key={zone}
-                onClick={() => toggle(zone)}
-                style={{
-                  width: 40, height: 40, border: '1px solid #21262d',
-                  background: sel ? 'rgba(240,136,62,0.2)' : '#1c2b42',
-                  color: sel ? '#f0883e' : '#c1ccda',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer', fontSize: 14, fontWeight: 700,
-                  userSelect: 'none', transition: 'all 0.12s',
-                }}
+    <svg width={SIZE} height={SIZE} style={{ display: 'block', cursor: 'default' }}>
+      <rect width={SIZE} height={SIZE} fill="#0d1117" />
+
+      {outerZones.map(({ zone, path, tx, ty }) => (
+        <g key={zone} onClick={() => toggle(zone)} style={{ cursor: 'pointer' }}>
+          <path d={pathD(path)} fill={fillColor(zone)} />
+          <text x={tx} y={ty} fontSize={10} fontWeight="700" fill={textColor(zone)} fontFamily="monospace">
+            {zone}
+          </text>
+        </g>
+      ))}
+
+      {[
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+      ].flatMap((row, ri) =>
+        row.map((zone, ci) => {
+          const x = SS + ci * CELL
+          const y = SS + ri * CELL
+          return (
+            <g key={zone} onClick={() => toggle(zone)} style={{ cursor: 'pointer' }}>
+              <rect x={x} y={y} width={CELL} height={CELL} fill={fillColor(zone)} />
+              <text x={x + CELL / 2} y={y + CELL / 2 + 1}
+                textAnchor="middle" dominantBaseline="middle"
+                fontSize={13} fontWeight="700"
+                fill={textColor(zone)} fontFamily="monospace"
               >
                 {zone}
-              </div>
-            )
-          })}
-        </div>
-      ))}
-    </div>
+              </text>
+            </g>
+          )
+        })
+      )}
+
+      {/* outer border dividers */}
+      <line x1={MID} y1={0} x2={MID} y2={SS} stroke="#30363d" strokeWidth={1} />
+      <line x1={MID} y1={SE} x2={MID} y2={SIZE} stroke="#30363d" strokeWidth={1} />
+      <line x1={0} y1={MID} x2={SS} y2={MID} stroke="#30363d" strokeWidth={1} />
+      <line x1={SE} y1={MID} x2={SIZE} y2={MID} stroke="#30363d" strokeWidth={1} />
+
+      {/* strike zone inner grid lines */}
+      <line x1={SS + CELL} y1={SS} x2={SS + CELL} y2={SE} stroke="#21262d" strokeWidth={1} />
+      <line x1={SS + CELL * 2} y1={SS} x2={SS + CELL * 2} y2={SE} stroke="#21262d" strokeWidth={1} />
+      <line x1={SS} y1={SS + CELL} x2={SE} y2={SS + CELL} stroke="#21262d" strokeWidth={1} />
+      <line x1={SS} y1={SS + CELL * 2} x2={SE} y2={SS + CELL * 2} stroke="#21262d" strokeWidth={1} />
+
+      {/* strike zone border */}
+      <rect x={SS} y={SS} width={CELL * 3} height={CELL * 3} fill="none" stroke="#465b78" strokeWidth={2} />
+      {/* outer border */}
+      <rect x={0} y={0} width={SIZE} height={SIZE} fill="none" stroke="#30363d" strokeWidth={2} />
+    </svg>
   )
 }
 
