@@ -48,15 +48,7 @@ export default function FeaturesPage({ page, onNavigate }) {
                   minHeight: 160,
                 }}
               >
-                <div style={{
-                  color: '#484f58',
-                  fontFamily: 'JetBrains Mono, monospace',
-                  fontSize: 12,
-                  marginBottom: 18,
-                }}>
-                  0{index + 1}
-                </div>
-                <h2 style={{
+<h2 style={{
                   color: '#e6edf3',
                   fontSize: 36,
                   letterSpacing: '0.06em',
