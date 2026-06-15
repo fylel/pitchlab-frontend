@@ -179,6 +179,14 @@ Content 區由上到下：
   - `src/components/PitchTypeTable.jsx` — 加入 `hasSelection` 判斷，區分「未選人」vs「有選人但無資料」，顯示不同提示訊息
   - `src/components/SummaryStats.jsx` — 有選人但無資料時改為顯示 6 張灰色 `—` 空牌，而非整個消失
   - `src/App.jsx` — 傳 `activeFilters` prop 給 SummaryStats 供判斷用
+- **改動結果**：
+
+| 狀態 | 修改前 | 修改後 |
+|------|--------|--------|
+| 沒選任何人 | Summary Stats 消失，Pitch Tracking 顯示「Select a pitcher or batter...」 | 同左（不變） |
+| 有選人，有資料 | 正常顯示 | 正常顯示（不變） |
+| 有選人，**無資料**（如大谷 vs Judge） | Summary Stats 消失、Pitch Tracking 顯示「Select a pitcher or batter...」（誤導） | Summary Stats 顯示 6 張灰色 `—` 空牌、Pitch Tracking 顯示「No data found for the selected combination. Try adjusting the filters or choosing a different matchup.」 |
+
 - **Commit**：`85e8884`
 
 ---
