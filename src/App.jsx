@@ -28,7 +28,7 @@ const SET_COLORS = ['#fb923c', '#38bdf8', '#4ade80', '#c084fc']
 const INITIAL_FILTERS = { ...DEFAULT_FILTERS, batterId: '', pitcherIds: [], pitcherRole: 'All' }
 
 // 定義後端基礎網址。正式站用 Render，本機開發可用 VITE_API_BASE_URL 覆蓋。
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://new-baseball-app-backend-fn6w.onrender.com";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://pitchlab-backend-om6r.onrender.com";
 
 const EMPTY_SET_DATA = {
   total: 0,
