@@ -37,10 +37,12 @@ export default function FeaturesPage({ page, onNavigate }) {
           </div>
           <p style={{
             color: '#8b949e',
-            fontSize: 16,
+            fontSize: 18,
             maxWidth: 620,
-            letterSpacing: '0.03em',
+            letterSpacing: '0.04em',
             marginBottom: 32,
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontWeight: 400,
           }}>
             PitchLab combines MLB pitch-level data with fast filters and compact visual analysis for game planning.
           </p>
@@ -74,7 +76,7 @@ export default function FeaturesPage({ page, onNavigate }) {
                 }}>
                   {feature.title}
                 </h2>
-                <p style={{ color: '#8b949e', fontSize: 14, lineHeight: 1.6, margin: 0 }}>
+                <p style={{ color: '#8b949e', fontSize: 15, lineHeight: 1.6, margin: 0, fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 400, letterSpacing: '0.03em' }}>
                   {feature.body}
                 </p>
               </section>
