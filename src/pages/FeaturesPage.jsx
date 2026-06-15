@@ -58,14 +58,14 @@ export default function FeaturesPage({ page, onNavigate }) {
                 </div>
                 <h2 style={{
                   color: '#e6edf3',
-                  fontSize: 24,
+                  fontSize: 36,
                   letterSpacing: '0.06em',
                   margin: '0 0 10px',
                   fontFamily: "'Bebas Neue', sans-serif",
                 }}>
                   {feature.title}
                 </h2>
-                <p style={{ color: '#8b949e', fontSize: 15, lineHeight: 1.6, margin: 0, fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 400, letterSpacing: '0.03em' }}>
+                <p style={{ color: '#8b949e', fontSize: 18, lineHeight: 1.6, margin: 0, fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 400, letterSpacing: '0.03em' }}>
                   {feature.body}
                 </p>
               </section>
