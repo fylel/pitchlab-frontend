@@ -328,7 +328,7 @@ function HistoricalDataPage({ page, onNavigate }) {
           </Sider>
 
           <Content style={{ padding: '20px', background: '#111c2b', minHeight: 'calc(100vh - 110px)', overflow: 'auto' }}>
-            <SummaryStats setsData={setsData} />
+            <SummaryStats setsData={setsData} activeFilters={activeFilters} />
             <div style={{ display: 'grid', gridTemplateColumns: '310px 1fr', gap: 16, marginBottom: 16 }}>
               <ZoneHeatmap zoneData={activeSetData?.zoneData} totalPitches={activeSetData?.total || 0} setColor={activeSet?.color} setName={activeSet?.name} />
               <ResultChart setsData={setsData} />

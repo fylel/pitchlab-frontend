@@ -21,7 +21,6 @@ function MetricLabel({ label, help }) {
 
 // Single set: 6 cards in a row
 function SingleStats({ stats }) {
-  if (!stats) return null
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10, marginBottom: 16 }}>
       {STAT_KEYS.map(({ key, label, format, color, help }) => (
@@ -36,8 +35,8 @@ function SingleStats({ stats }) {
           }}>
             <MetricLabel label={label} help={help} />
           </div>
-          <div style={{ fontSize: 26, fontWeight: 700, color, fontFamily: 'JetBrains Mono, monospace', lineHeight: 1 }}>
-            {format(stats[key])}
+          <div style={{ fontSize: 26, fontWeight: 700, color: stats ? color : '#484f58', fontFamily: 'JetBrains Mono, monospace', lineHeight: 1 }}>
+            {stats ? format(stats[key]) : '—'}
           </div>
         </div>
       ))}
@@ -94,8 +93,10 @@ function ComparisonStats({ setsData }) {
   )
 }
 
-export default function SummaryStats({ setsData }) {
+export default function SummaryStats({ setsData, activeFilters }) {
   if (!setsData?.length) return null
+  const hasSelection = Boolean(activeFilters?.batterId) || Boolean(activeFilters?.pitcherIds?.length)
+  if (!hasSelection && !setsData[0].summaryStats) return null
   if (setsData.length === 1) return <SingleStats stats={setsData[0].summaryStats} />
   return <ComparisonStats setsData={setsData} />
 }

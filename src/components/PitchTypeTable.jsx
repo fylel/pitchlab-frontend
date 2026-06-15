@@ -163,6 +163,7 @@ export default function PitchTypeTable({ data, outcomeData, filters }) {
     }
   })
   const hasData = rows.length > 0
+  const hasSelection = hasPitcherFilter(filters) || hasBatterFilter(filters)
 
   return (
     <section className="analysis-card">
@@ -185,7 +186,9 @@ export default function PitchTypeTable({ data, outcomeData, filters }) {
         />
       ) : (
         <div className="analysis-empty-state">
-          Select a pitcher or batter to view pitch tracking.
+          {hasSelection
+            ? 'No data found for the selected combination. Try adjusting the filters or choosing a different matchup.'
+            : 'Select a pitcher or batter to view pitch tracking.'}
         </div>
       )}
     </section>
