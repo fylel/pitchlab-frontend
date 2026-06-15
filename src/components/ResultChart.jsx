@@ -107,6 +107,13 @@ function ComparisonChart({ setsData }) {
   )
 }
 
+function getEmptyMessage(filters) {
+  const hasPitcher = Array.isArray(filters?.pitcherIds) && filters.pitcherIds.length > 0
+  const hasBatter = Boolean(filters?.batterId)
+  if (hasPitcher || hasBatter) return 'No data available for the current selection.'
+  return 'Select a pitcher or batter to view pitch outcomes.'
+}
+
 export default function ResultChart({ setsData }) {
   const isEmpty = !setsData?.length || setsData.every(s => !s.resultData?.length)
 
@@ -114,8 +121,8 @@ export default function ResultChart({ setsData }) {
     <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 8, padding: '16px' }}>
       <Title />
       {isEmpty ? (
-        <div style={{ height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#484f58' }}>
-          No data
+        <div style={{ height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#484f58', fontSize: 13 }}>
+          {getEmptyMessage(setsData?.[0]?.filters)}
         </div>
       ) : setsData.length === 1 ? (
         <SingleChart data={setsData[0].resultData} />
