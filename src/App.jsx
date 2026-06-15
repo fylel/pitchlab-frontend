@@ -4,6 +4,7 @@ import FilterPanel from './components/FilterPanel'
 import SetTabs from './components/SetTabs'
 import SummaryStats from './components/SummaryStats'
 import ZoneHeatmap from './components/ZoneHeatmap'
+import NextPitchProbabilityHeatmap from './components/NextPitchProbabilityHeatmap'
 import ResultChart from './components/ResultChart'
 import PitchTypeTable from './components/PitchTypeTable'
 import OutcomeDistribution from './components/OutcomeDistribution'
@@ -30,6 +31,8 @@ const INITIAL_FILTERS = { ...DEFAULT_FILTERS, batterId: '', pitcherIds: [], pitc
 // 定義後端基礎網址。正式站用 Render，本機開發可用 VITE_API_BASE_URL 覆蓋。
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://pitchlab-backend-om6r.onrender.com";
 
+const EMPTY_NEXT_PITCH_DATA = { selected_count: 0, valid_next_count: 0, zones: {} }
+
 const EMPTY_SET_DATA = {
   total: 0,
   summaryStats: null,
@@ -37,6 +40,7 @@ const EMPTY_SET_DATA = {
   pitchTypeData: [],
   zoneData: {},
   outcomeData: { total: 0, outcomes: [], pitchTypeOutcomes: [] },
+  nextPitchData: EMPTY_NEXT_PITCH_DATA,
 }
 
 const readCachedOptions = (key) => {
@@ -161,13 +165,19 @@ function HistoricalDataPage({ page, onNavigate }) {
         .then(res => res.ok ? res.json() : EMPTY_SET_DATA.outcomeData)
         .catch(() => EMPTY_SET_DATA.outcomeData);
 
+      const nextPitchPromise = fetch(`${API_BASE_URL}/api/next-pitch-zones?${params.toString()}`, {
+        signal: controller.signal,
+      })
+        .then(res => res.ok ? res.json() : EMPTY_NEXT_PITCH_DATA)
+        .catch(() => EMPTY_NEXT_PITCH_DATA);
+
       if (!response.ok) {
         const fallback = await fetch(`${API_BASE_URL}/api/pitches?${params.toString()}`, {
           signal: controller.signal,
         });
         const pitches = await fallback.json();
         const rows = Array.isArray(pitches) ? pitches : [];
-        const outcomeData = await outcomesPromise;
+        const [outcomeData, nextPitchData] = await Promise.all([outcomesPromise, nextPitchPromise]);
         return {
           total: rows.length,
           summaryStats: getSummaryStats(rows),
@@ -175,10 +185,11 @@ function HistoricalDataPage({ page, onNavigate }) {
           pitchTypeData: aggregateByPitchType(rows),
           zoneData: aggregateByZone(rows),
           outcomeData,
+          nextPitchData,
         };
       }
-      const [data, outcomeData] = await Promise.all([response.json(), outcomesPromise]);
-      return data && typeof data === 'object' ? { ...data, outcomeData } : EMPTY_SET_DATA;
+      const [data, outcomeData, nextPitchData] = await Promise.all([response.json(), outcomesPromise, nextPitchPromise]);
+      return data && typeof data === 'object' ? { ...data, outcomeData, nextPitchData } : EMPTY_SET_DATA;
     };
 
     const fetchAllSummaries = async () => {
@@ -254,6 +265,7 @@ function HistoricalDataPage({ page, onNavigate }) {
         pitchTypeData: summary.pitchTypeData || [],
         zoneData: summary.zoneData || {},
         outcomeData: summary.outcomeData || EMPTY_SET_DATA.outcomeData,
+        nextPitchData: summary.nextPitchData || EMPTY_NEXT_PITCH_DATA,
       };
     });
   }, [sets, setSummaries]);
@@ -329,8 +341,9 @@ function HistoricalDataPage({ page, onNavigate }) {
 
           <Content style={{ padding: '20px', background: '#111c2b', minHeight: 'calc(100vh - 110px)', overflow: 'auto' }}>
             <SummaryStats setsData={setsData} activeFilters={activeFilters} />
-            <div style={{ display: 'grid', gridTemplateColumns: '350px 1fr', gap: 16, marginBottom: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 16 }}>
               <ZoneHeatmap zoneData={activeSetData?.zoneData} totalPitches={activeSetData?.total || 0} setColor={activeSet?.color} setName={activeSet?.name} />
+              <NextPitchProbabilityHeatmap nextPitchData={activeSetData?.nextPitchData} setColor={activeSet?.color} setName={activeSet?.name} />
               <ResultChart setsData={setsData} />
             </div>
             <PitchTypeTable data={activeSetData?.pitchTypeData || []} outcomeData={activeSetData?.outcomeData} filters={activeFilters} />
